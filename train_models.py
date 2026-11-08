@@ -517,3 +517,115 @@ joblib.dump(
 print("\nKNN model saved successfully.")
 
 
+# ==========================================
+# MODEL 4: GAUSSIAN NAIVE BAYES CLASSIFIER
+# ==========================================
+
+# Import Gaussian Naive Bayes from scikit-learn
+from sklearn.naive_bayes import GaussianNB
+
+# Create a Gaussian Naive Bayes classifier
+naive_bayes_model = GaussianNB()
+
+# Train the model using encoded training features
+# Scaling is not required for Gaussian Naive Bayes
+naive_bayes_model.fit(X_train_encoded, y_train)
+
+# Print confirmation after training
+print("\nGaussian Naive Bayes training completed.")
+
+
+# ==========================================
+# NAIVE BAYES: PREDICTIONS
+# ==========================================
+
+# Predict insurance claim classes using test data
+y_pred_nb = naive_bayes_model.predict(
+    X_test_encoded
+)
+
+# Predict the probability of insurance claim class 1
+y_prob_nb = naive_bayes_model.predict_proba(
+    X_test_encoded
+)[:, 1]
+
+# Display the first ten predicted classes
+print("\nFirst 10 Naive Bayes predictions:")
+print(y_pred_nb[:10])
+
+# Display the first ten actual classes
+print("\nFirst 10 actual values:")
+print(y_test.to_numpy()[:10])
+
+
+# ==========================================
+# NAIVE BAYES: MODEL EVALUATION
+# ==========================================
+
+# Calculate accuracy
+nb_accuracy = accuracy_score(y_test, y_pred_nb)
+
+# Calculate AUC using the predicted probabilities
+nb_auc = roc_auc_score(y_test, y_prob_nb)
+
+# Calculate precision
+nb_precision = precision_score(y_test, y_pred_nb)
+
+# Calculate recall
+nb_recall = recall_score(y_test, y_pred_nb)
+
+# Calculate F1 Score
+nb_f1 = f1_score(y_test, y_pred_nb)
+
+# Calculate Matthews Correlation Coefficient
+nb_mcc = matthews_corrcoef(y_test, y_pred_nb)
+
+# Display the six evaluation metrics
+print("\n===================================")
+print("NAIVE BAYES PERFORMANCE")
+print("===================================")
+
+print("Accuracy :", round(nb_accuracy, 4))
+print("AUC      :", round(nb_auc, 4))
+print("Precision:", round(nb_precision, 4))
+print("Recall   :", round(nb_recall, 4))
+print("F1 Score :", round(nb_f1, 4))
+print("MCC      :", round(nb_mcc, 4))
+
+
+# ==========================================
+# NAIVE BAYES: CONFUSION MATRIX
+# ==========================================
+
+# Calculate the confusion matrix
+nb_cm = confusion_matrix(
+    y_test,
+    y_pred_nb
+)
+
+# Display the confusion matrix
+print("\nNaive Bayes Confusion Matrix:")
+print(nb_cm)
+
+# Display the classification report
+print("\nNaive Bayes Classification Report:")
+print(
+    classification_report(
+        y_test,
+        y_pred_nb
+    )
+)
+
+
+# ==========================================
+# NAIVE BAYES: SAVE TRAINED MODEL
+# ==========================================
+
+# Save the Gaussian Naive Bayes classifier
+joblib.dump(
+    naive_bayes_model,
+    "models/naive_bayes.joblib"
+)
+
+# Display confirmation
+print("\nNaive Bayes model saved successfully.")

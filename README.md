@@ -82,7 +82,7 @@ Each model will be evaluated using Accuracy, AUC, Precision, Recall, F1 Score an
 | Logistic Regression | 0.8455 | 0.9158 | 0.7548 | 0.7512 | 0.7530 | 0.6406 |
 | Decision Tree (Depth 5) | 0.8395 | 0.9001 | 0.7812 | 0.6778 | 0.7259 | 0.6163 |
 | KNN (K=11) | 0.8145 | 0.8871 | 0.7000 | 0.7145 | 0.7072 | 0.5715 |
-| Naive Bayes | Pending | Pending | Pending | Pending | Pending | Pending |
+| Gaussian Naive Bayes | 0.7885 | 0.8692 | 0.6278 | 0.7990 | 0.7032 | 0.5521 |
 | SVM | Pending | Pending | Pending | Pending | Pending | Pending |
 
 ## 7. Model Performance Observations
@@ -153,9 +153,19 @@ Compared with Logistic Regression and the depth-5 Decision Tree, KNN achieved lo
 
 Overall, KNN provided reasonable classification performance but was not the best-performing model among the first three classifiers.
 
+### Gaussian Naive Bayes — Performance Observation
+
+The Gaussian Naive Bayes classifier was implemented using the encoded features of the Car Insurance Claim dataset. It achieved an Accuracy of 78.85%, AUC of 0.8692, Precision of 0.6278, Recall of 0.7990, F1 Score of 0.7032, and MCC of 0.5521.
+
+The confusion matrix showed that the classifier correctly identified 501 actual insurance claims and missed 126 claims. However, it incorrectly classified 297 no-claim records as claims.
+
+Among the four models evaluated so far, Gaussian Naive Bayes achieved the highest Recall but the lowest Precision and Accuracy. This indicates that the classifier is relatively effective at identifying positive insurance claim cases but produces more false-positive predictions.
+
+Overall, Naive Bayes provides a useful baseline when detecting actual claims is important, although Logistic Regression currently offers a better balance of Precision and Recall as measured by F1 Score.
+
 ### Other Models
 
-Performance observations for  Naive Bayes and SVM will be added after evaluation.
+Performance observations for  SVM will be added after evaluation.
 
 ### Overall Winning Model
 
