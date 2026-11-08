@@ -119,6 +119,10 @@ The Decision Tree Classifier was implemented using Entropy as the splitting crit
 | False Negative (FN) | 187 | 202 |
 | True Positive (TP) | 440 | 425 |
 
+### Decision Tree Visualization
+
+![Decision Tree (max_depth=5)](decision_tree_visualization.png)
+
 #### Observations
 
 Increasing the maximum depth from 4 to 5 improved Accuracy, AUC, Precision, F1 Score, and MCC. The F1 Score increased from 0.7166 to 0.7259, indicating a small improvement in the balance between Precision and Recall.
@@ -152,6 +156,10 @@ The confusion matrix showed that the model correctly classified 1,629 of 2,000 r
 Compared with Logistic Regression and the depth-5 Decision Tree, KNN achieved lower Accuracy, AUC, F1 Score and MCC. However, its Recall was higher than the Decision Tree's Recall, indicating that KNN detected a larger proportion of actual claims.
 
 Overall, KNN provided reasonable classification performance but was not the best-performing model among the first three classifiers.
+
+### KNN - K Selection Using Cross-Validation
+
+![KNN F1 Score Comparison](knn_k_selection.png)
 
 ### Gaussian Naive Bayes — Performance Observation
 
