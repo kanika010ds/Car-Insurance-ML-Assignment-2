@@ -83,7 +83,7 @@ Each model will be evaluated using Accuracy, AUC, Precision, Recall, F1 Score an
 | Decision Tree (Depth 5) | 0.8395 | 0.9001 | 0.7812 | 0.6778 | 0.7259 | 0.6163 |
 | KNN (K=11) | 0.8145 | 0.8871 | 0.7000 | 0.7145 | 0.7072 | 0.5715 |
 | Gaussian Naive Bayes | 0.7885 | 0.8692 | 0.6278 | 0.7990 | 0.7032 | 0.5521 |
-| SVM | Pending | Pending | Pending | Pending | Pending | Pending |
+| SVM | 0.8430 | 0.9034 | 0.7441 | 0.7608 | 0.7524 | 0.6375 |
 
 ## 7. Model Performance Observations
 
@@ -163,13 +163,30 @@ Among the four models evaluated so far, Gaussian Naive Bayes achieved the highes
 
 Overall, Naive Bayes provides a useful baseline when detecting actual claims is important, although Logistic Regression currently offers a better balance of Precision and Recall as measured by F1 Score.
 
-### Other Models
+### Support Vector Machine (SVM) — Performance Observation
 
-Performance observations for  SVM will be added after evaluation.
+The Support Vector Machine classifier was implemented using the RBF kernel with `C=1.0` and `gamma="scale"`. Standardized input features were used for model training.
 
-### Overall Winning Model
+The SVM achieved an Accuracy of 84.30%, AUC of 0.9034, Precision of 0.7441, Recall of 0.7608, F1 Score of 0.7524, and MCC of 0.6375.
 
-To be determined after evaluating all five classifiers.
+The confusion matrix showed 1,209 true negatives, 164 false positives, 150 false negatives, and 477 true positives.
+
+SVM achieved competitive performance, with results very close to Logistic Regression. Its Recall was slightly higher than Logistic Regression, while its Accuracy, AUC, Precision, F1 and MCC were slightly lower.
+
+### Overall Model Comparison and Winner
+
+All five classification models were evaluated using the same 2,000 test records.
+
+Logistic Regression achieved the highest F1 Score (0.7530), Accuracy (0.8455), AUC (0.9158), and MCC (0.6406).
+
+The Decision Tree achieved the highest Precision (0.7812), while Gaussian Naive Bayes achieved the highest Recall (0.7990).
+
+**Selected Winner: Logistic Regression**
+
+Logistic Regression was selected as the best-performing model based on F1 Score, the primary evaluation metric for this project. It demonstrated a good balance between Precision and Recall, while maintaining the highest Accuracy, AUC and MCC among the five classifiers.
+
+SVM was a close alternative, with an F1 Score of 0.7524 compared with Logistic Regression's 0.7530. The small difference suggests that both models achieved similar predictive performance on this test dataset.
+
 
 ## 8. Streamlit Web Application
 

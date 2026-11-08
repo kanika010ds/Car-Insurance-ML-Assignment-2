@@ -629,3 +629,122 @@ joblib.dump(
 
 # Display confirmation
 print("\nNaive Bayes model saved successfully.")
+
+
+# ==========================================
+# MODEL 5: SUPPORT VECTOR MACHINE (SVM)
+# ==========================================
+
+# Import Support Vector Classifier from scikit-learn
+from sklearn.svm import SVC
+
+# Create the SVM classifier
+svm_model = SVC(
+    kernel="rbf",        # Use RBF kernel for nonlinear classification
+    C=1.0,               # Regularization parameter
+    gamma="scale",       # Automatically calculate kernel coefficient
+    probability=True,    # Enable probability predictions for AUC
+    random_state=42      # Set random state for reproducibility
+)
+
+# Train SVM using scaled training features
+svm_model.fit(X_train_scaled, y_train)
+
+# Display confirmation
+print("\nSVM training completed.")
+
+
+# ==========================================
+# SVM: PREDICTIONS
+# ==========================================
+
+# Predict insurance claim classes
+y_pred_svm = svm_model.predict(
+    X_test_scaled
+)
+
+# Calculate the probability of class 1
+y_prob_svm = svm_model.predict_proba(
+    X_test_scaled
+)[:, 1]
+
+# Display the first ten predictions
+print("\nFirst 10 SVM predictions:")
+print(y_pred_svm[:10])
+
+# Display the first ten actual values
+print("\nFirst 10 actual values:")
+print(y_test.to_numpy()[:10])
+
+
+# ==========================================
+# SVM: MODEL EVALUATION
+# ==========================================
+
+# Calculate Accuracy
+svm_accuracy = accuracy_score(y_test, y_pred_svm)
+
+# Calculate AUC using predicted probabilities
+svm_auc = roc_auc_score(y_test, y_prob_svm)
+
+# Calculate Precision
+svm_precision = precision_score(y_test, y_pred_svm)
+
+# Calculate Recall
+svm_recall = recall_score(y_test, y_pred_svm)
+
+# Calculate F1 Score
+svm_f1 = f1_score(y_test, y_pred_svm)
+
+# Calculate Matthews Correlation Coefficient
+svm_mcc = matthews_corrcoef(y_test, y_pred_svm)
+
+# Display evaluation results
+print("\n===================================")
+print("SVM PERFORMANCE")
+print("===================================")
+
+print("Accuracy :", round(svm_accuracy, 4))
+print("AUC      :", round(svm_auc, 4))
+print("Precision:", round(svm_precision, 4))
+print("Recall   :", round(svm_recall, 4))
+print("F1 Score :", round(svm_f1, 4))
+print("MCC      :", round(svm_mcc, 4))
+
+
+# ==========================================
+# SVM: CONFUSION MATRIX
+# ==========================================
+
+# Calculate confusion matrix
+svm_cm = confusion_matrix(
+    y_test,
+    y_pred_svm
+)
+
+# Display confusion matrix
+print("\nSVM Confusion Matrix:")
+print(svm_cm)
+
+# Display detailed classification report
+print("\nSVM Classification Report:")
+print(
+    classification_report(
+        y_test,
+        y_pred_svm
+    )
+)
+
+
+# ==========================================
+# SVM: SAVE TRAINED MODEL
+# ==========================================
+
+# Save the trained SVM classifier
+joblib.dump(
+    svm_model,
+    "models/svm.joblib"
+)
+
+# Display confirmation
+print("\nSVM model saved successfully.")
