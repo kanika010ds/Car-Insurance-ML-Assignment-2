@@ -3,7 +3,8 @@
 **Course:** Machine Learning  
 **Programme:** M.Tech (Artificial Intelligence and Machine Learning)  
 **Institution:** BITS Pilani WILP  
-**Application:** ClaimLens Studio
+**Application:** ClaimLens Studio  
+**Deployment:** [Launch ClaimLens Studio](https://car-insurance-ml-assignment-2-h6a7jnf54ixmwuudp87ry6.streamlit.app/)
 
 ## 1. Problem Statement
 
@@ -161,6 +162,17 @@ The application supports:
 
 **No training takes place in the web application.** Saved fitted models and preprocessing objects are loaded with `joblib`.
 
+### How to use the dashboard
+
+1. Open the [live application](https://car-insurance-ml-assignment-2-h6a7jnf54ixmwuudp87ry6.streamlit.app/).
+2. Choose a classification model from the sidebar (Logistic Regression, Decision Tree, KNN, Gaussian Naive Bayes, or SVM).
+3. Upload `test_data.csv`, or another CSV containing the same original feature columns and a binary `OUTCOME` column.
+4. Inspect Accuracy, AUC, Precision, Recall, F1 Score, MCC, the metric chart, confusion matrix, and classification report.
+5. Download the file containing predictions and claim probabilities, if needed.
+6. Review the five-model comparison table and chart. This comparison represents the original held-out test set, not a recalculation for every uploaded dataset.
+
+**Input format:** The uploaded CSV must contain the original feature names expected by the application and a ground-truth `OUTCOME` column with values `0` or `1`. The `ID` column, when present, is not used as a predictor. The provided `test_data.csv` is the recommended example. AUC requires both classes to be present in the uploaded labels.
+
 ### Run locally
 
 Use Python 3.11 and install the dependencies:
@@ -174,7 +186,9 @@ Upload the provided `test_data.csv` to reproduce the model evaluations. The app'
 
 ### Live Streamlit application
 
-**Pending deployment.** Replace this text with the actual Streamlit Community Cloud URL after deployment and verification.
+**Live app:** [ClaimLens Studio on Streamlit Community Cloud](https://car-insurance-ml-assignment-2-h6a7jnf54ixmwuudp87ry6.streamlit.app/)  
+
+**Repository:** [GitHub — Car-Insurance-ML-Assignment-2](https://github.com/kanika010ds/Car-Insurance-ML-Assignment-2)
 
 ## 9. Project Files
 
@@ -211,16 +225,24 @@ Car-Insurance-ML-Assignment-2/
 
 ### Completed
 
-- Dataset exploration, preprocessing, and train–test split.
-- Training, evaluation, and saving all five classifiers.
-- Six-metric model comparison and per-model observations.
-- Decision Tree and KNN visualizations.
-- Saving fitted preprocessing artifacts and held-out test CSV.
-- ClaimLens Studio UI and local functional checks of all five saved models.
+- Selected and explored the Car Insurance Claim dataset.
+- Completed data preprocessing and an 80/20 stratified train–test split.
+- Trained, evaluated, and saved all five classification models.
+- Compared the models using the six required classification metrics.
+- Documented model-specific observations and identified Logistic Regression as the overall winner by F1 Score.
+- Generated Decision Tree and KNN analysis visualizations.
+- Saved the preprocessing artifacts and held-out test CSV.
+- Developed and tested the ClaimLens Studio dashboard.
+- Pushed the project to GitHub on the `main` branch.
+- Cloned and launched the application in the BITS Virtual Lab environment.
+- Deployed ClaimLens Studio to Streamlit Community Cloud and obtained its live application URL.
 
-### Pending
+## 11. Reproducibility and Deployment Notes
 
-- Commit and push the final project files to GitHub.
-- Deploy ClaimLens Studio on **Streamlit Community Cloud** and verify the live application.
-- Insert the verified live app URL above.
-- Submit the final PDF with the GitHub URL, live Streamlit URL, Virtual Lab screenshot, and README content.
+- **Evaluation data:** All benchmark metrics in Section 6 were obtained from the same 2,000-record held-out test split. The exact test records are provided in `test_data.csv`.
+- **Saved models:** The `models/` directory contains the five trained classifiers and fitted preprocessing artifacts. These are loaded for predictions; the Streamlit app does not retrain models.
+- **Training scripts:** `data_preprocessing.py` handles preparing the dataset and preprocessing objects; `train_models.py` handles model training/evaluation. The saved artifacts allow running the dashboard without downloading or refitting the original dataset.
+- **Dependencies:** Install packages from `requirements.txt` in a compatible Python environment (Python 3.11 was used for project development).
+- **Hosting:** Streamlit Community Cloud builds the application from the GitHub `main` branch and uses `app.py` as the entry point.
+- **Scope:** This is an academic machine-learning demonstration. Its predictions should not be treated as automated insurance eligibility or claims decisions without further validation, calibration, and governance.
+
