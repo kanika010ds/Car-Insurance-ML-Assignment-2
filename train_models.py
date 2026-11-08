@@ -140,3 +140,27 @@ print(
         y_pred_logistic
     )
 )
+
+
+# ==========================================
+# MODEL 1: SAVE TRAINED MODEL
+# ==========================================
+
+# Import joblib to save trained models
+import joblib
+
+# Import os to create directories
+import os
+
+# Create the models folder if it does not exist
+os.makedirs("models", exist_ok=True)
+
+# Save the trained Logistic Regression model
+joblib.dump(
+    logistic_model,
+    "models/logistic_regression.joblib"
+)
+
+# Print confirmation
+print("\nLogistic Regression model saved successfully.")
+
