@@ -278,40 +278,55 @@ print(
 )
 
 
+
 # ==========================================
-# DECISION TREE: VISUALIZATION
+# DECISION TREE: CLEAR VISUALIZATION
 # ==========================================
 
-# Import Matplotlib for plotting
+# Import Matplotlib
 import matplotlib.pyplot as plt
 
-# Import plot_tree to visualize the Decision Tree
+# Import Decision Tree plotting function
 from sklearn.tree import plot_tree
 
-# Create a figure for the tree
-plt.figure(figsize=(20, 10))
+# Create a much larger figure
+fig, ax = plt.subplots(figsize=(36, 18))
 
-# Plot the trained Decision Tree
+# Plot the Decision Tree
 plot_tree(
     decision_tree_model,
     feature_names=X_train_encoded.columns,
     class_names=["No Claim", "Claim"],
     filled=True,
     rounded=True,
-    fontsize=8
+    fontsize=7,
+    ax=ax
 )
 
 # Add a title
-plt.title("Decision Tree - Car Insurance Claim Prediction")
+ax.set_title(
+    "Decision Tree - Car Insurance Claim Prediction",
+    fontsize=18
+)
 
-# Adjust the figure layout
-plt.tight_layout()
+# Save as a high-resolution PNG
+fig.savefig(
+    "decision_tree_visualization.png",
+    dpi=200,
+    bbox_inches="tight"
+)
 
-# Display the tree
-plt.show()
+# Save as a vector PDF for zooming without losing clarity
+fig.savefig(
+    "decision_tree_visualization.pdf",
+    bbox_inches="tight"
+)
 
-# Save the Decision Tree visualization as an image
-plt.savefig("decision_tree_visualization.png", dpi=200, bbox_inches="tight")
+# Close the figure to avoid unnecessary popup windows
+plt.close(fig)
+
+print("Decision Tree visualization saved successfully.")
+
 
 # ==========================================
 # DECISION TREE: SAVE MODEL

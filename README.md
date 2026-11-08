@@ -2,42 +2,41 @@
 
 **Course:** Machine Learning  
 **Programme:** M.Tech (Artificial Intelligence and Machine Learning)  
-**Institution:** BITS Pilani WILP
+**Institution:** BITS Pilani WILP  
+**Application:** ClaimLens Studio
 
 ## 1. Problem Statement
 
-The objective of this project is to predict whether a customer will make a car insurance claim based on demographic information, driving history, and vehicle-related attributes.
-
-This is a binary classification problem, where:
+The objective is to predict whether a customer will make a car insurance claim using demographic information, driving history, and vehicle-related attributes. This is a **binary classification** task:
 
 - **0:** No insurance claim
 - **1:** Insurance claim
 
-Five machine learning classification algorithms are implemented and evaluated to compare their predictive performance.
+Five classification algorithms were trained on the same dataset and evaluated on the same held-out test set.
 
 ## 2. Dataset Description
 
-**Dataset Name:** Car Insurance Claim  
-**Dataset Source:** [Kaggle — Car Insurance Data](https://www.kaggle.com/datasets/sagnik1511/car-insurance-data)
+**Dataset:** Car Insurance Claim  
+**Source:** [Kaggle — Car Insurance Data](https://www.kaggle.com/datasets/sagnik1511/car-insurance-data)
 
 | Attribute | Description |
 |---|---|
 | Total records | 10,000 |
-| Total original columns | 19 |
-| Input features | 17 |
-| Target variable | OUTCOME |
-| Problem type | Binary Classification |
-| Training samples | 8,000 |
-| Testing samples | 2,000 |
+| Original columns | 19 |
+| Input features (excluding ID and target) | 17 |
+| Target variable | `OUTCOME` |
+| Problem type | Binary classification |
+| Training samples | 8,000 (80%) |
+| Testing samples | 2,000 (20%) |
 
-The dataset contains customer demographic details, driving experience, credit scores, vehicle characteristics, speeding violations, DUIs, and past accidents.
+The input features describe customer demographics, driving experience, credit history, vehicle characteristics, speeding violations, DUIs, and past accidents.
 
-### Target Distribution
+### Class distribution
 
-| Class | Records | Percentage |
+| Target | Records | Percentage |
 |---|---:|---:|
-| No claim (0) | 6,867 | 68.67% |
-| Claim (1) | 3,133 | 31.33% |
+| No claim (`0`) | 6,867 | 68.67% |
+| Claim (`1`) | 3,133 | 31.33% |
 
 ## 3. GitHub Repository
 
@@ -45,63 +44,61 @@ The dataset contains customer demographic details, driving experience, credit sc
 
 ## 4. Data Preprocessing
 
-The following preprocessing steps were performed:
+The preprocessing workflow performs the following steps:
 
-1. Removed the `ID` column and separated the target variable `OUTCOME`.
-2. Split the dataset into 80% training and 20% testing using stratified sampling.
-3. Handled missing values using median imputation.
-4. Converted categorical variables into numerical representations using ordinal mappings, binary encoding, and one-hot encoding.
-5. Applied `StandardScaler` for feature scaling.
-6. Saved the original held-out test data as `test_data.csv`.
+1. Removes the identifier `ID` from model input and separates `OUTCOME` as the target.
+2. Creates a **stratified 80/20 train–test split** (`random_state=42`).
+3. Fits median imputation on the **training set only** and applies it to training and test features.
+4. Converts categorical variables with ordinal/binary mappings and one-hot encodes `POSTAL_CODE` using an encoder fitted on training data.
+5. Produces **20 encoded model-input columns** in a consistent order.
+6. Fits `StandardScaler` on training data for models requiring feature scaling. The KNN saved pipeline contains its own scaler.
+7. Exports the untouched-feature held-out test split (including the target) to `test_data.csv`.
+8. Saves fitted preprocessing objects in `models/` for reuse by the Streamlit app without retraining.
 
-### Missing Values
+### Missing values in the original dataset
 
-| Feature | Missing Values | Method |
+| Feature | Missing values | Treatment |
 |---|---:|---|
-| CREDIT_SCORE | 982 | Median Imputation |
-| ANNUAL_MILEAGE | 957 | Median Imputation |
+| `CREDIT_SCORE` | 982 | Training median imputation |
+| `ANNUAL_MILEAGE` | 957 | Training median imputation |
 
-After preprocessing, the dataset contains 20 encoded input features.
+Saved preprocessing artifacts include `imputer.joblib`, `postal_encoder.joblib`, `scaler.joblib`, and `feature_columns.joblib`.
 
-## 5. Classification Models
+## 5. Classification Models and Evaluation
 
-The following five classifiers are included in the assignment:
+Five classifiers were implemented:
 
-1. Logistic Regression
-2. Decision Tree Classifier
-3. K-Nearest Neighbors (KNN)
-4. Naive Bayes Classifier
-5. Support Vector Machine (SVM)
+1. **Logistic Regression** — scaled features.
+2. **Decision Tree** — entropy criterion, maximum depth 5 (exploratory comparison with depth 4).
+3. **K-Nearest Neighbors (KNN)** — `K=11` selected by five-fold cross-validation on training data, using F1 as the selection metric.
+4. **Gaussian Naive Bayes** — encoded features.
+5. **Support Vector Machine (SVM)** — RBF kernel, `C=1.0`, `gamma="scale"`, scaled features.
 
-Each model will be evaluated using Accuracy, AUC, Precision, Recall, F1 Score and Matthews Correlation Coefficient (MCC).
+All five models were evaluated on the **same 2,000 held-out test records** using **Accuracy, ROC-AUC, Precision, Recall, F1 Score, and Matthews Correlation Coefficient (MCC)**.
 
 ## 6. Model Performance Comparison
 
 | ML Model | Accuracy | AUC | Precision | Recall | F1 | MCC |
 |---|---:|---:|---:|---:|---:|---:|
-| Logistic Regression | 0.8455 | 0.9158 | 0.7548 | 0.7512 | 0.7530 | 0.6406 |
-| Decision Tree (Depth 5) | 0.8395 | 0.9001 | 0.7812 | 0.6778 | 0.7259 | 0.6163 |
+| Logistic Regression | **0.8455** | **0.9158** | 0.7548 | 0.7512 | **0.7530** | **0.6406** |
+| Decision Tree (Depth 5) | 0.8395 | 0.9001 | **0.7812** | 0.6778 | 0.7259 | 0.6163 |
 | KNN (K=11) | 0.8145 | 0.8871 | 0.7000 | 0.7145 | 0.7072 | 0.5715 |
-| Gaussian Naive Bayes | 0.7885 | 0.8692 | 0.6278 | 0.7990 | 0.7032 | 0.5521 |
-| SVM | 0.8430 | 0.9034 | 0.7441 | 0.7608 | 0.7524 | 0.6375 |
+| Gaussian Naive Bayes | 0.7885 | 0.8692 | 0.6278 | **0.7990** | 0.7032 | 0.5521 |
+| SVM (RBF) | 0.8430 | 0.9034 | 0.7441 | 0.7608 | 0.7524 | 0.6375 |
+
+**Primary selection metric:** F1 Score, chosen to assess the balance between precision and recall for the claim class in this moderately imbalanced dataset.
 
 ## 7. Model Performance Observations
 
 ### Logistic Regression
 
-The Logistic Regression model achieved an accuracy of 84.55% and an F1 score of 0.7530 on the test dataset.
+Logistic Regression achieved **84.55% accuracy**, **0.7530 F1**, **0.9158 AUC**, and **0.6406 MCC**. It correctly classified **1,691 of 2,000** test records. Precision (0.7548) and recall (0.7512) were closely balanced. It produced the highest F1, accuracy, AUC, and MCC among the five models.
 
-The model correctly classified 1,691 out of 2,000 records. Its precision and recall were nearly equal, indicating balanced performance in identifying insurance claims.
+### Decision Tree
 
-The AUC score of 0.9158 indicates strong discrimination between the two classes.
+The Decision Tree used entropy-based splitting. Tree depths of 4 and 5 were compared during exploratory analysis.
 
-### Decision Tree Classifier — Performance Analysis
-
-The Decision Tree Classifier was implemented using Entropy as the splitting criterion. Two experiments were conducted with different maximum depths (`max_depth=4` and `max_depth=5`) to study how tree complexity affects classification performance.
-
-#### Comparison of Maximum Tree Depth
-
-| Evaluation Metric | Depth 4 | Depth 5 |
+| Evaluation metric | Depth 4 | Depth 5 |
 |---|---:|---:|
 | Accuracy | 0.8260 | **0.8395** |
 | AUC | 0.8893 | **0.9001** |
@@ -110,114 +107,120 @@ The Decision Tree Classifier was implemented using Entropy as the splitting crit
 | F1 Score | 0.7166 | **0.7259** |
 | MCC | 0.5914 | **0.6163** |
 
-#### Confusion Matrix Comparison
-
-| Confusion Matrix Component | Depth 4 | Depth 5 |
+| Confusion matrix component | Depth 4 | Depth 5 |
 |---|---:|---:|
-| True Negative (TN) | 1212 | 1254 |
-| False Positive (FP) | 161 | 119 |
-| False Negative (FN) | 187 | 202 |
-| True Positive (TP) | 440 | 425 |
+| True negatives (TN) | 1212 | 1254 |
+| False positives (FP) | 161 | 119 |
+| False negatives (FN) | 187 | 202 |
+| True positives (TP) | 440 | 425 |
 
-### Decision Tree Visualization
+Depth 5 improved five of six metrics, including F1, but decreased recall. It produced fewer false positives and more missed claims. **Depth 5 was retained provisionally** based on exploratory test results; selecting the depth using cross-validation on training data would be methodologically stronger.
+
+**Decision Tree visualization:**
 
 ![Decision Tree (max_depth=5)](decision_tree_visualization.png)
 
-#### Observations
-
-Increasing the maximum depth from 4 to 5 improved Accuracy, AUC, Precision, F1 Score, and MCC. The F1 Score increased from 0.7166 to 0.7259, indicating a small improvement in the balance between Precision and Recall.
-
-However, Recall decreased from 0.7018 to 0.6778. This means that the depth-5 model missed more actual insurance claims, although it also reduced false-positive predictions.
-
-#### Selected Configuration
-
-For the current experiment, `max_depth=5` was retained because it achieved better F1 Score and MCC on the test dataset.
-
-This is a provisional selection based on exploratory results. A more rigorous selection would use cross-validation on the training data.
-
-**Current Decision Tree Result (Depth 5):**
-- Accuracy: 83.95%
-- AUC: 0.9001
-- Precision: 0.7812
-- Recall: 0.6778
-- F1 Score: 0.7259
-- MCC: 0.6163
+A vector version is available as `decision_tree_visualization.pdf`.
 
 ### K-Nearest Neighbors (KNN)
 
-K-Nearest Neighbors was implemented using standardized features. Different values of K from 1 to 15 were evaluated using 5-fold cross-validation on the training data.
+Values from **K=1 through K=15** were compared using five-fold training-set cross-validation. The highest average validation F1 was **0.7252 at K=11** (K=9 was very close at 0.7250). K=11 was retained for the saved KNN classifier.
 
-The highest average cross-validation F1 Score was 0.7252 at K=11. Therefore, K=11 was selected for the final KNN classifier.
+On held-out test data, KNN obtained **81.45% accuracy**, **0.7072 F1**, and **0.5715 MCC**. It correctly classified **1,629 of 2,000** records, detecting 448 actual claims, missing 179, and producing 192 false positives. KNN recall (0.7145) was higher than Decision Tree recall (0.6778), but its overall F1 was lower.
 
-The model achieved an Accuracy of 81.45%, AUC of 0.8871, Precision of 0.7000, Recall of 0.7145, F1 Score of 0.7072, and MCC of 0.5715 on the test dataset.
-
-The confusion matrix showed that the model correctly classified 1,629 of 2,000 records, including 448 actual insurance claims. It missed 179 insurance claims and incorrectly classified 192 no-claim records as claims.
-
-Compared with Logistic Regression and the depth-5 Decision Tree, KNN achieved lower Accuracy, AUC, F1 Score and MCC. However, its Recall was higher than the Decision Tree's Recall, indicating that KNN detected a larger proportion of actual claims.
-
-Overall, KNN provided reasonable classification performance but was not the best-performing model among the first three classifiers.
-
-### KNN - K Selection Using Cross-Validation
+**K selection visualization:**
 
 ![KNN F1 Score Comparison](knn_k_selection.png)
 
-### Gaussian Naive Bayes — Performance Observation
+### Gaussian Naive Bayes
 
-The Gaussian Naive Bayes classifier was implemented using the encoded features of the Car Insurance Claim dataset. It achieved an Accuracy of 78.85%, AUC of 0.8692, Precision of 0.6278, Recall of 0.7990, F1 Score of 0.7032, and MCC of 0.5521.
+Gaussian Naive Bayes achieved **78.85% accuracy**, **0.8692 AUC**, **0.7032 F1**, and **0.5521 MCC**. It identified **501 of 627 actual claims**, missing 126, but produced 297 false-positive claims. Its **recall of 0.7990 was the highest** among the five classifiers, while its precision (0.6278) and accuracy were the lowest. This may be useful when missing a true claim is particularly costly, although it increases false alarms.
 
-The confusion matrix showed that the classifier correctly identified 501 actual insurance claims and missed 126 claims. However, it incorrectly classified 297 no-claim records as claims.
+### Support Vector Machine (SVM)
 
-Among the four models evaluated so far, Gaussian Naive Bayes achieved the highest Recall but the lowest Precision and Accuracy. This indicates that the classifier is relatively effective at identifying positive insurance claim cases but produces more false-positive predictions.
+SVM used an **RBF kernel** on scaled features with `C=1.0` and `gamma="scale"`. It achieved **84.30% accuracy**, **0.9034 AUC**, **0.7524 F1**, and **0.6375 MCC**. Its confusion matrix contained 1,209 TN, 164 FP, 150 FN, and 477 TP.
 
-Overall, Naive Bayes provides a useful baseline when detecting actual claims is important, although Logistic Regression currently offers a better balance of Precision and Recall as measured by F1 Score.
+SVM performed very similarly to Logistic Regression. Its recall (0.7608) was slightly higher, while its accuracy, AUC, precision, F1, and MCC were slightly lower.
 
-### Support Vector Machine (SVM) — Performance Observation
+### Overall Winner
 
-The Support Vector Machine classifier was implemented using the RBF kernel with `C=1.0` and `gamma="scale"`. Standardized input features were used for model training.
+**Selected winner: Logistic Regression**, based on the highest F1 Score (**0.7530**), as well as the highest accuracy, AUC, and MCC. **SVM is a close alternative**, with F1 of **0.7524**; this small observed difference does not establish that one will always generalize better.
 
-The SVM achieved an Accuracy of 84.30%, AUC of 0.9034, Precision of 0.7441, Recall of 0.7608, F1 Score of 0.7524, and MCC of 0.6375.
+## 8. Streamlit Web Application — ClaimLens Studio
 
-The confusion matrix showed 1,209 true negatives, 164 false positives, 150 false negatives, and 477 true positives.
+**ClaimLens Studio** is a dark-themed interactive car insurance classification dashboard built with Streamlit. The interface includes insurance-themed images, a five-model selector, CSV upload, performance charts, comparison tables, a confusion matrix, classification reports, and downloadable prediction results.
 
-SVM achieved competitive performance, with results very close to Logistic Regression. Its Recall was slightly higher than Logistic Regression, while its Accuracy, AUC, Precision, F1 and MCC were slightly lower.
+The application supports:
 
-### Overall Model Comparison and Winner
+- Uploading a CSV containing the original input features and `OUTCOME` target.
+- Choosing any of the five saved classifiers.
+- Calculating the six required evaluation metrics on uploaded labeled data.
+- Displaying active model performance graphs and a confusion matrix.
+- Showing the five-model benchmark comparison from the original held-out dataset.
+- Downloading predicted classes and claim probabilities as CSV.
 
-All five classification models were evaluated using the same 2,000 test records.
+**No training takes place in the web application.** Saved fitted models and preprocessing objects are loaded with `joblib`.
 
-Logistic Regression achieved the highest F1 Score (0.7530), Accuracy (0.8455), AUC (0.9158), and MCC (0.6406).
+### Run locally
 
-The Decision Tree achieved the highest Precision (0.7812), while Gaussian Naive Bayes achieved the highest Recall (0.7990).
+Use Python 3.11 and install the dependencies:
 
-**Selected Winner: Logistic Regression**
+```bash
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
 
-Logistic Regression was selected as the best-performing model based on F1 Score, the primary evaluation metric for this project. It demonstrated a good balance between Precision and Recall, while maintaining the highest Accuracy, AUC and MCC among the five classifiers.
+Upload the provided `test_data.csv` to reproduce the model evaluations. The app's stored comparison table is based on the original held-out test set; the active model metrics are calculated for the uploaded CSV.
 
-SVM was a close alternative, with an F1 Score of 0.7524 compared with Logistic Regression's 0.7530. The small difference suggests that both models achieved similar predictive performance on this test dataset.
+### Live Streamlit application
 
+**Pending deployment.** Replace this text with the actual Streamlit Community Cloud URL after deployment and verification.
 
-## 8. Streamlit Web Application
+## 9. Project Files
 
-An interactive Streamlit application will be developed to allow users to:
+```text
+Car-Insurance-ML-Assignment-2/
+├── app.py
+├── data_preprocessing.py
+├── train_models.py
+├── README.md
+├── requirements.txt
+├── test_data.csv
+├── .streamlit/
+│   └── config.toml
+├── assets/
+│   ├── hero_car.png
+│   ├── sidebar_insurance.png
+│   └── road_footer.png
+├── models/
+│   ├── logistic_regression.joblib
+│   ├── decision_tree.joblib
+│   ├── knn.joblib
+│   ├── naive_bayes.joblib
+│   ├── svm.joblib
+│   ├── imputer.joblib
+│   ├── postal_encoder.joblib
+│   ├── scaler.joblib
+│   └── feature_columns.joblib
+├── decision_tree_visualization.png
+├── decision_tree_visualization.pdf
+└── knn_k_selection.png
+```
 
-- Upload a test CSV file.
-- Select a trained classification model.
-- View model evaluation metrics.
-- Display a confusion matrix or classification report.
-- Compare the classification models.
+## 10. Project Status
 
-**Live Streamlit App:** To be added after deployment.
+### Completed
 
-## 9. Project Status
+- Dataset exploration, preprocessing, and train–test split.
+- Training, evaluation, and saving all five classifiers.
+- Six-metric model comparison and per-model observations.
+- Decision Tree and KNN visualizations.
+- Saving fitted preprocessing artifacts and held-out test CSV.
+- ClaimLens Studio UI and local functional checks of all five saved models.
 
-**Completed:**
-- Dataset selection and inspection
-- Data preprocessing
-- Train-test split
-- Logistic Regression training and evaluation
+### Pending
 
-**Remaining:**
-- Decision Tree, KNN, Naive Bayes and SVM
-- Model comparison and observations
-- Streamlit application and deployment
-- Final submission PDF
+- Commit and push the final project files to GitHub.
+- Deploy ClaimLens Studio on **Streamlit Community Cloud** and verify the live application.
+- Insert the verified live app URL above.
+- Submit the final PDF with the GitHub URL, live Streamlit URL, Virtual Lab screenshot, and README content.

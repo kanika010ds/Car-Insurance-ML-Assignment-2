@@ -423,3 +423,41 @@ print("\nTest data saved successfully.")
 
 # Display the test dataset shape
 print("Test data shape:", test_data.shape)
+
+
+# ==========================================
+# SAVE PREPROCESSING OBJECTS FOR STREAMLIT
+# ==========================================
+
+
+# ==========================================
+# SAVE PREPROCESSING OBJECTS FOR STREAMLIT
+# ==========================================
+
+# Import joblib for saving objects
+import joblib
+
+# Import os for creating a folder
+import os
+
+# Create models folder if it does not exist
+os.makedirs("models", exist_ok=True)
+
+# Save the fitted median imputer
+joblib.dump(imputer, "models/imputer.joblib")
+
+# Save the fitted postal code encoder
+joblib.dump(postal_encoder, "models/postal_encoder.joblib")
+
+# Save the fitted feature scaler
+joblib.dump(scaler, "models/scaler.joblib")
+
+# Save the exact encoded feature columns used during training
+joblib.dump(
+    X_train_encoded.columns.tolist(),
+    "models/feature_columns.joblib"
+)
+# Print success message
+print("\nPreprocessing objects saved successfully.")
+
+
