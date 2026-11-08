@@ -366,3 +366,60 @@ print("Testing missing values:",
 # Confirm training and testing columns match
 print("\nSame columns in both datasets:",
       X_train_encoded.columns.equals(X_test_encoded.columns))
+
+
+# ==========================================
+# STEP 10: FEATURE SCALING
+# ==========================================
+
+# Import StandardScaler from scikit-learn
+from sklearn.preprocessing import StandardScaler
+
+# Create a StandardScaler object
+scaler = StandardScaler()
+
+# Learn the mean and standard deviation from training data
+# Then scale the training features
+X_train_scaled = scaler.fit_transform(
+    X_train_encoded
+)
+
+# Scale test features using the training mean and standard deviation
+X_test_scaled = scaler.transform(
+    X_test_encoded
+)
+
+# Display the shape of the scaled training data
+print("\nScaled training shape:")
+print(X_train_scaled.shape)
+
+# Display the shape of the scaled testing data
+print("\nScaled testing shape:")
+print(X_test_scaled.shape)
+
+# Display the first five rows of scaled training features
+print("\nFirst five scaled training records:")
+print(X_train_scaled[:5])
+
+
+# ==========================================
+# STEP 11: SAVE TEST DATA
+# ==========================================
+
+# Import os to work with file paths
+import os
+
+# Create a copy of the original test features
+test_data = X_test.copy()
+
+# Add the actual target values to the test dataset
+test_data["OUTCOME"] = y_test
+
+# Save the test data in the project folder
+test_data.to_csv("test_data.csv", index=False)
+
+# Display confirmation
+print("\nTest data saved successfully.")
+
+# Display the test dataset shape
+print("Test data shape:", test_data.shape)
