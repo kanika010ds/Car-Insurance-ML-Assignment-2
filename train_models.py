@@ -7,6 +7,10 @@
 # Import Logistic Regression model
 from sklearn.linear_model import LogisticRegression
 
+
+# Import StandardScaler for feature scaling in KNN
+from sklearn.preprocessing import StandardScaler
+
 # Import the six required evaluation metrics
 from sklearn.metrics import (
     accuracy_score,
@@ -321,4 +325,195 @@ joblib.dump(
 
 # Display confirmation
 print("\nDecision Tree model saved successfully.")
+
+
+# ==========================================
+# MODEL 3: K-NEAREST NEIGHBORS (KNN)
+# ==========================================
+
+# Import KNN classifier
+from sklearn.neighbors import KNeighborsClassifier
+
+# Import cross-validation function
+from sklearn.model_selection import cross_val_score
+
+# Import Pipeline for combining scaling and KNN
+from sklearn.pipeline import Pipeline
+
+# Import NumPy for numerical operations
+import numpy as np
+
+# Create a list of K values from 1 to 15
+k_values = range(1, 16)
+
+# Create an empty list to store F1 scores
+knn_f1_scores = []
+
+# Try each K value
+for k in k_values:
+
+    # Create a pipeline that scales data before applying KNN
+    knn_pipeline = Pipeline([
+        ("scaler", StandardScaler()),
+        ("knn", KNeighborsClassifier(n_neighbors=k))
+    ])
+
+    # Calculate F1 scores using 5-fold cross-validation
+    # Only training data is used to choose K
+    scores = cross_val_score(
+        knn_pipeline,
+        X_train_encoded,
+        y_train,
+        cv=5,
+        scoring="f1"
+    )
+
+    # Calculate the average F1 score
+    mean_f1 = scores.mean()
+
+    # Store the average score
+    knn_f1_scores.append(mean_f1)
+
+    # Display the current K and its score
+    print("K =", k, "| Average F1 =", round(mean_f1, 4))
+
+# Find the position of the highest F1 score
+best_index = np.argmax(knn_f1_scores)
+
+# Get the corresponding K value
+best_k = list(k_values)[best_index]
+
+# Display the selected K
+print("\nBest K:", best_k)
+
+
+# ==========================================
+# KNN: VISUALIZE K VALUES
+# ==========================================
+
+# Create a figure
+plt.figure(figsize=(9, 5))
+
+# Plot K values against average F1 scores
+plt.plot(
+    list(k_values),
+    knn_f1_scores,
+    marker="o"
+)
+
+# Add the chart title
+plt.title("KNN - Number of Neighbors vs F1 Score")
+
+# Add labels
+plt.xlabel("Number of Neighbors (K)")
+plt.ylabel("Cross-Validation F1 Score")
+
+# Display grid
+plt.grid(True)
+
+# Save the figure
+plt.savefig(
+    "knn_k_selection.png",
+    dpi=150,
+    bbox_inches="tight"
+)
+
+# Display the chart
+plt.show()
+
+
+# ==========================================
+# KNN: TRAIN FINAL MODEL
+# ==========================================
+
+# Create final KNN pipeline using the best K
+knn_model = Pipeline([
+    ("scaler", StandardScaler()),
+    ("knn", KNeighborsClassifier(n_neighbors=best_k))
+])
+
+# Train the pipeline using training data
+knn_model.fit(X_train_encoded, y_train)
+
+# Display confirmation
+print("\nKNN training completed.")
+
+# Predict the test class labels
+y_pred_knn = knn_model.predict(X_test_encoded)
+
+# Predict probabilities for class 1
+y_prob_knn = knn_model.predict_proba(
+    X_test_encoded
+)[:, 1]
+
+# Display the first ten predictions
+print("\nFirst 10 KNN predictions:")
+print(y_pred_knn[:10])
+
+
+# ==========================================
+# KNN: MODEL EVALUATION
+# ==========================================
+
+# Calculate Accuracy
+knn_accuracy = accuracy_score(y_test, y_pred_knn)
+
+# Calculate AUC
+knn_auc = roc_auc_score(y_test, y_prob_knn)
+
+# Calculate Precision
+knn_precision = precision_score(y_test, y_pred_knn)
+
+# Calculate Recall
+knn_recall = recall_score(y_test, y_pred_knn)
+
+# Calculate F1 Score
+knn_f1 = f1_score(y_test, y_pred_knn)
+
+# Calculate MCC
+knn_mcc = matthews_corrcoef(y_test, y_pred_knn)
+
+# Display all metrics
+print("\n===================================")
+print("KNN PERFORMANCE")
+print("===================================")
+
+print("Best K   :", best_k)
+print("Accuracy :", round(knn_accuracy, 4))
+print("AUC      :", round(knn_auc, 4))
+print("Precision:", round(knn_precision, 4))
+print("Recall   :", round(knn_recall, 4))
+print("F1 Score :", round(knn_f1, 4))
+print("MCC      :", round(knn_mcc, 4))
+
+
+# ==========================================
+# KNN: CONFUSION MATRIX
+# ==========================================
+
+# Calculate the confusion matrix
+knn_cm = confusion_matrix(y_test, y_pred_knn)
+
+# Display the confusion matrix
+print("\nKNN Confusion Matrix:")
+print(knn_cm)
+
+# Display the classification report
+print("\nKNN Classification Report:")
+print(classification_report(y_test, y_pred_knn))
+
+
+# ==========================================
+# KNN: SAVE TRAINED MODEL
+# ==========================================
+
+# Save the complete KNN pipeline
+joblib.dump(
+    knn_model,
+    "models/knn.joblib"
+)
+
+# Display confirmation
+print("\nKNN model saved successfully.")
+
 

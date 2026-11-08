@@ -80,8 +80,8 @@ Each model will be evaluated using Accuracy, AUC, Precision, Recall, F1 Score an
 | ML Model | Accuracy | AUC | Precision | Recall | F1 | MCC |
 |---|---:|---:|---:|---:|---:|---:|
 | Logistic Regression | 0.8455 | 0.9158 | 0.7548 | 0.7512 | 0.7530 | 0.6406 |
-| Decision Tree | Pending | Pending | Pending | Pending | Pending | Pending |
-| KNN | Pending | Pending | Pending | Pending | Pending | Pending |
+| Decision Tree (Depth 5) | 0.8395 | 0.9001 | 0.7812 | 0.6778 | 0.7259 | 0.6163 |
+| KNN (K=11) | 0.8145 | 0.8871 | 0.7000 | 0.7145 | 0.7072 | 0.5715 |
 | Naive Bayes | Pending | Pending | Pending | Pending | Pending | Pending |
 | SVM | Pending | Pending | Pending | Pending | Pending | Pending |
 
@@ -95,9 +95,67 @@ The model correctly classified 1,691 out of 2,000 records. Its precision and rec
 
 The AUC score of 0.9158 indicates strong discrimination between the two classes.
 
+### Decision Tree Classifier — Performance Analysis
+
+The Decision Tree Classifier was implemented using Entropy as the splitting criterion. Two experiments were conducted with different maximum depths (`max_depth=4` and `max_depth=5`) to study how tree complexity affects classification performance.
+
+#### Comparison of Maximum Tree Depth
+
+| Evaluation Metric | Depth 4 | Depth 5 |
+|---|---:|---:|
+| Accuracy | 0.8260 | **0.8395** |
+| AUC | 0.8893 | **0.9001** |
+| Precision | 0.7321 | **0.7812** |
+| Recall | **0.7018** | 0.6778 |
+| F1 Score | 0.7166 | **0.7259** |
+| MCC | 0.5914 | **0.6163** |
+
+#### Confusion Matrix Comparison
+
+| Confusion Matrix Component | Depth 4 | Depth 5 |
+|---|---:|---:|
+| True Negative (TN) | 1212 | 1254 |
+| False Positive (FP) | 161 | 119 |
+| False Negative (FN) | 187 | 202 |
+| True Positive (TP) | 440 | 425 |
+
+#### Observations
+
+Increasing the maximum depth from 4 to 5 improved Accuracy, AUC, Precision, F1 Score, and MCC. The F1 Score increased from 0.7166 to 0.7259, indicating a small improvement in the balance between Precision and Recall.
+
+However, Recall decreased from 0.7018 to 0.6778. This means that the depth-5 model missed more actual insurance claims, although it also reduced false-positive predictions.
+
+#### Selected Configuration
+
+For the current experiment, `max_depth=5` was retained because it achieved better F1 Score and MCC on the test dataset.
+
+This is a provisional selection based on exploratory results. A more rigorous selection would use cross-validation on the training data.
+
+**Current Decision Tree Result (Depth 5):**
+- Accuracy: 83.95%
+- AUC: 0.9001
+- Precision: 0.7812
+- Recall: 0.6778
+- F1 Score: 0.7259
+- MCC: 0.6163
+
+### K-Nearest Neighbors (KNN)
+
+K-Nearest Neighbors was implemented using standardized features. Different values of K from 1 to 15 were evaluated using 5-fold cross-validation on the training data.
+
+The highest average cross-validation F1 Score was 0.7252 at K=11. Therefore, K=11 was selected for the final KNN classifier.
+
+The model achieved an Accuracy of 81.45%, AUC of 0.8871, Precision of 0.7000, Recall of 0.7145, F1 Score of 0.7072, and MCC of 0.5715 on the test dataset.
+
+The confusion matrix showed that the model correctly classified 1,629 of 2,000 records, including 448 actual insurance claims. It missed 179 insurance claims and incorrectly classified 192 no-claim records as claims.
+
+Compared with Logistic Regression and the depth-5 Decision Tree, KNN achieved lower Accuracy, AUC, F1 Score and MCC. However, its Recall was higher than the Decision Tree's Recall, indicating that KNN detected a larger proportion of actual claims.
+
+Overall, KNN provided reasonable classification performance but was not the best-performing model among the first three classifiers.
+
 ### Other Models
 
-Performance observations for Decision Tree, KNN, Naive Bayes and SVM will be added after evaluation.
+Performance observations for  Naive Bayes and SVM will be added after evaluation.
 
 ### Overall Winning Model
 
