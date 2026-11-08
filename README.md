@@ -91,6 +91,18 @@ All five models were evaluated on the **same 2,000 held-out test records** using
 
 ## 7. Model Performance Observations
 
+### Summary of Model Observations
+
+| ML Model Name | Observation about model performance |
+|---|---|
+| Logistic Regression | Best overall by F1 (0.7530), accuracy (0.8455), AUC (0.9158), and MCC (0.6406); balanced precision and recall. |
+| Decision Tree | Highest precision (0.7812) at depth 5; lower recall (0.6778). Depth 5 was chosen from an exploratory test-set comparison, not training-set cross-validation. |
+| KNN | K=11 selected using five-fold training cross-validation; test F1 of 0.7072, with recall higher than the Decision Tree but lower overall F1. |
+| Gaussian Naive Bayes | Highest recall (0.7990) but lowest precision (0.6278); captures more actual claims at the cost of additional false positives. |
+| Support Vector Machine | Very close to Logistic Regression (F1 of 0.7524); slightly better recall (0.7608) but slightly lower other headline metrics. |
+| **Overall, Winner for your dataset?** | **Logistic Regression**, selected by the highest held-out test F1 score (0.7530). SVM is a close alternative; the difference is small. |
+
+
 ### Logistic Regression
 
 Logistic Regression achieved **84.55% accuracy**, **0.7530 F1**, **0.9158 AUC**, and **0.6406 MCC**. It correctly classified **1,691 of 2,000** test records. Precision (0.7548) and recall (0.7512) were closely balanced. It produced the highest F1, accuracy, AUC, and MCC among the five models.
@@ -191,6 +203,8 @@ Upload the provided `test_data.csv` to reproduce the model evaluations. The app'
 **Repository:** [GitHub — Car-Insurance-ML-Assignment-2](https://github.com/kanika010ds/Car-Insurance-ML-Assignment-2)
 
 ## 9. Project Files
+
+**Folder naming note:** This repository uses `models/` (plural) for the saved classifiers and fitted preprocessing artifacts. It fulfills the assignment's `model/` directory requirement using a plural folder name.
 
 ```text
 Car-Insurance-ML-Assignment-2/
