@@ -10,6 +10,9 @@ import pandas as pd
 # Import kagglehub to download the dataset
 import kagglehub
 
+# Import NumPy for numerical operations
+import numpy as np
+
 # Import os to work with file paths
 import os
 
@@ -149,3 +152,217 @@ print(X_train_clean.isnull().sum().sum())
 print("\nMissing values in testing data:")
 print(X_test_clean.isnull().sum().sum())
 
+
+# ==========================================
+# STEP 6: ENCODE ORDINAL CATEGORICAL FEATURES
+# ==========================================
+
+# Create copies of the cleaned datasets
+X_train_encoded = X_train_clean.copy()
+X_test_encoded = X_test_clean.copy()
+
+# Define numerical values for age groups
+age_mapping = {
+    "16-25": 0,
+    "26-39": 1,
+    "40-64": 2,
+    "65+": 3
+}
+
+# Define numerical values for driving experience
+experience_mapping = {
+    "0-9y": 0,
+    "10-19y": 1,
+    "20-29y": 2,
+    "30y+": 3
+}
+
+# Define numerical values for education levels
+education_mapping = {
+    "none": 0,
+    "high school": 1,
+    "university": 2
+}
+
+# Define numerical values for income groups
+income_mapping = {
+    "poverty": 0,
+    "working class": 1,
+    "middle class": 2,
+    "upper class": 3
+}
+
+# Combine all mappings into one dictionary
+ordinal_mappings = {
+    "AGE": age_mapping,
+    "DRIVING_EXPERIENCE": experience_mapping,
+    "EDUCATION": education_mapping,
+    "INCOME": income_mapping
+}
+
+# Apply each mapping to training and testing data
+for column, mapping in ordinal_mappings.items():
+
+    # Convert training categories into numbers
+    X_train_encoded[column] = X_train_encoded[column].map(mapping)
+
+    # Convert testing categories using the same mapping
+    X_test_encoded[column] = X_test_encoded[column].map(mapping)
+
+# Display encoded columns
+print("\nEncoded ordinal features:")
+print(
+    X_train_encoded[
+        ["AGE", "DRIVING_EXPERIENCE", "EDUCATION", "INCOME"]
+    ].head()
+)
+
+
+# ==========================================
+# STEP 7: ENCODE BINARY CATEGORICAL FEATURES
+# ==========================================
+
+# Define numerical values for gender
+gender_mapping = {
+    "female": 0,
+    "male": 1
+}
+
+# Define numerical values for race categories
+race_mapping = {
+    "majority": 0,
+    "minority": 1
+}
+
+# Define numerical values for vehicle year
+vehicle_year_mapping = {
+    "before 2015": 0,
+    "after 2015": 1
+}
+
+# Define numerical values for vehicle type
+vehicle_type_mapping = {
+    "sedan": 0,
+    "sports car": 1
+}
+
+# Combine the binary feature mappings
+binary_mappings = {
+    "GENDER": gender_mapping,
+    "RACE": race_mapping,
+    "VEHICLE_YEAR": vehicle_year_mapping,
+    "VEHICLE_TYPE": vehicle_type_mapping
+}
+
+# Apply mappings to both datasets
+for column, mapping in binary_mappings.items():
+
+    # Encode training values
+    X_train_encoded[column] = X_train_encoded[column].map(mapping)
+
+    # Encode testing values
+    X_test_encoded[column] = X_test_encoded[column].map(mapping)
+
+# Display the encoded binary features
+print("\nEncoded binary features:")
+print(
+    X_train_encoded[
+        ["GENDER", "RACE", "VEHICLE_YEAR", "VEHICLE_TYPE"]
+    ].head()
+)
+
+
+# ==========================================
+# STEP 8: ONE-HOT ENCODE POSTAL_CODE
+# ==========================================
+
+# Import OneHotEncoder from scikit-learn
+from sklearn.preprocessing import OneHotEncoder
+
+# Create the one-hot encoder
+postal_encoder = OneHotEncoder(
+    handle_unknown="ignore",
+    sparse_output=False
+)
+
+# Learn postal code categories from training data
+postal_train = postal_encoder.fit_transform(
+    X_train_encoded[["POSTAL_CODE"]]
+)
+
+# Apply the same encoder to testing data
+postal_test = postal_encoder.transform(
+    X_test_encoded[["POSTAL_CODE"]]
+)
+
+# Get names for the new encoded columns
+postal_columns = postal_encoder.get_feature_names_out(
+    ["POSTAL_CODE"]
+)
+
+# Convert encoded training values into a DataFrame
+postal_train_df = pd.DataFrame(
+    postal_train,
+    columns=postal_columns,
+    index=X_train_encoded.index
+)
+
+# Convert encoded testing values into a DataFrame
+postal_test_df = pd.DataFrame(
+    postal_test,
+    columns=postal_columns,
+    index=X_test_encoded.index
+)
+
+# Remove the original POSTAL_CODE column
+X_train_encoded = X_train_encoded.drop(columns=["POSTAL_CODE"])
+X_test_encoded = X_test_encoded.drop(columns=["POSTAL_CODE"])
+
+# Add the encoded postal code columns
+X_train_encoded = pd.concat(
+    [X_train_encoded, postal_train_df],
+    axis=1
+)
+
+# Add the same columns to testing data
+X_test_encoded = pd.concat(
+    [X_test_encoded, postal_test_df],
+    axis=1
+)
+
+# Display the dimensions after encoding
+print("\nTraining shape after encoding:", X_train_encoded.shape)
+print("Testing shape after encoding:", X_test_encoded.shape)
+
+
+# ==========================================
+# STEP 9: VERIFY CATEGORICAL ENCODING
+# ==========================================
+
+# Identify non-numerical columns in training data
+non_numeric_train = X_train_encoded.select_dtypes(
+    exclude=np.number
+).columns
+
+# Identify non-numerical columns in testing data
+non_numeric_test = X_test_encoded.select_dtypes(
+    exclude=np.number
+).columns
+
+# Display remaining non-numerical columns
+print("\nNon-numeric training columns:")
+print(non_numeric_train.tolist())
+
+print("\nNon-numeric testing columns:")
+print(non_numeric_test.tolist())
+
+# Display missing-value counts
+print("\nTraining missing values:",
+      X_train_encoded.isnull().sum().sum())
+
+print("Testing missing values:",
+      X_test_encoded.isnull().sum().sum())
+
+# Confirm training and testing columns match
+print("\nSame columns in both datasets:",
+      X_train_encoded.columns.equals(X_test_encoded.columns))
