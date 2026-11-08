@@ -164,3 +164,161 @@ joblib.dump(
 # Print confirmation
 print("\nLogistic Regression model saved successfully.")
 
+
+# ==========================================
+# MODEL 2: DECISION TREE CLASSIFIER
+# ==========================================
+
+# Import Decision Tree Classifier from scikit-learn
+from sklearn.tree import DecisionTreeClassifier
+
+# Import encoded training and testing features
+# Decision Tree does not require feature scaling
+from data_preprocessing import X_train_encoded, X_test_encoded
+
+# Create Decision Tree model using Entropy
+# max_depth=4 limits tree growth to reduce overfitting
+decision_tree_model = DecisionTreeClassifier(
+    criterion="entropy",
+    max_depth=5,
+    random_state=42
+)
+
+# Train Decision Tree using training features and labels
+decision_tree_model.fit(X_train_encoded, y_train)
+
+# Display confirmation
+print("\nDecision Tree training completed.")
+
+
+# ==========================================
+# DECISION TREE: PREDICTIONS
+# ==========================================
+
+# Predict class labels for test data
+y_pred_tree = decision_tree_model.predict(
+    X_test_encoded
+)
+
+# Predict probabilities for class 1
+# These probabilities are used to calculate AUC
+y_prob_tree = decision_tree_model.predict_proba(
+    X_test_encoded
+)[:, 1]
+
+# Display first ten predictions
+print("\nFirst 10 Decision Tree predictions:")
+print(y_pred_tree[:10])
+
+# Display first ten actual labels
+print("\nFirst 10 actual values:")
+print(y_test.to_numpy()[:10])
+
+
+# ==========================================
+# DECISION TREE: MODEL EVALUATION
+# ==========================================
+
+# Calculate Accuracy
+tree_accuracy = accuracy_score(y_test, y_pred_tree)
+
+# Calculate ROC-AUC using class probabilities
+tree_auc = roc_auc_score(y_test, y_prob_tree)
+
+# Calculate Precision
+tree_precision = precision_score(y_test, y_pred_tree)
+
+# Calculate Recall
+tree_recall = recall_score(y_test, y_pred_tree)
+
+# Calculate F1 Score
+tree_f1 = f1_score(y_test, y_pred_tree)
+
+# Calculate Matthews Correlation Coefficient
+tree_mcc = matthews_corrcoef(y_test, y_pred_tree)
+
+# Display all evaluation metrics
+print("\n===================================")
+print("DECISION TREE PERFORMANCE")
+print("===================================")
+
+print("Accuracy :", round(tree_accuracy, 4))
+print("AUC      :", round(tree_auc, 4))
+print("Precision:", round(tree_precision, 4))
+print("Recall   :", round(tree_recall, 4))
+print("F1 Score :", round(tree_f1, 4))
+print("MCC      :", round(tree_mcc, 4))
+
+
+# ==========================================
+# DECISION TREE: CONFUSION MATRIX
+# ==========================================
+
+# Calculate the confusion matrix
+tree_cm = confusion_matrix(
+    y_test,
+    y_pred_tree
+)
+
+# Display confusion matrix
+print("\nDecision Tree Confusion Matrix:")
+print(tree_cm)
+
+# Display classification report
+print("\nDecision Tree Classification Report:")
+print(
+    classification_report(
+        y_test,
+        y_pred_tree
+    )
+)
+
+
+# ==========================================
+# DECISION TREE: VISUALIZATION
+# ==========================================
+
+# Import Matplotlib for plotting
+import matplotlib.pyplot as plt
+
+# Import plot_tree to visualize the Decision Tree
+from sklearn.tree import plot_tree
+
+# Create a figure for the tree
+plt.figure(figsize=(20, 10))
+
+# Plot the trained Decision Tree
+plot_tree(
+    decision_tree_model,
+    feature_names=X_train_encoded.columns,
+    class_names=["No Claim", "Claim"],
+    filled=True,
+    rounded=True,
+    fontsize=8
+)
+
+# Add a title
+plt.title("Decision Tree - Car Insurance Claim Prediction")
+
+# Adjust the figure layout
+plt.tight_layout()
+
+# Display the tree
+plt.show()
+
+# Save the Decision Tree visualization as an image
+plt.savefig("decision_tree_visualization.png", dpi=200, bbox_inches="tight")
+
+# ==========================================
+# DECISION TREE: SAVE MODEL
+# ==========================================
+
+# Save the trained Decision Tree model
+joblib.dump(
+    decision_tree_model,
+    "models/decision_tree.joblib"
+)
+
+# Display confirmation
+print("\nDecision Tree model saved successfully.")
+
